@@ -5,6 +5,7 @@ require('dotenv').config();
 const port = process.env.PORT || 5000;
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { get } = require('express/lib/response');
 // let ObjectId = require('mongodb').ObjectID;
 app.use(express.json());
 app.use(cors());
@@ -18,7 +19,23 @@ async function run() {
     try {
         await client.connect();
         const collection = client.db("bestTools").collection("products");
-        console.log('collected');
+        const userCollection = client.db("bestTools").collection("users");
+
+
+
+
+        app.put('/user', async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const user = req.body;
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: user,
+            };
+            const result = await collection.updateOne(filter, options, updateDoc);
+            res.send(result);
+        })
+
 
         app.get('/products', async (req, res) => {
             const query = {};
@@ -35,7 +52,7 @@ async function run() {
             res.send(service);
         });
         //
-        app.post("/product", async (req, res) => {
+        app.post("/products", async (req, res) => {
             const newItem = req.body;
             // const tokenInfo = req.headers.authorization;
             // console.log(tokenInfo);
@@ -44,17 +61,17 @@ async function run() {
         });
 
         // 
-        app.put('/quantity/:id', async (req, res) => {
+        app.put('/products/:id', async (req, res) => {
             const id = req.params.id;
             const query = req.body;
             const filter = { _id: ObjectId(id) };
-            const option = { upsert: true };
+            const options = { upsert: true };
             const updateDoc = {
                 $set: {
                     quantity: query.quantity,
                 },
             };
-            const result = await collection.updateOne(filter, updateDoc, option);
+            const result = await collection.updateOne(filter, updateDoc, options);
             res.send(result);
         });
 
