@@ -1,9 +1,11 @@
 const express = require('express');
+
 const app = express();
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+// let ObjectId = require('mongodb').ObjectID;
 app.use(express.json());
 app.use(cors());
 
@@ -15,7 +17,46 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         await client.connect();
-        const collection = client.db("tools-admin").collection("products");
+        const collection = client.db("bestTools").collection("products");
+        console.log('collected');
+
+        app.get('/products', async (req, res) => {
+            const query = {};
+            const cursor = collection.find(query);
+            const services = await cursor.toArray();
+            res.send(services);
+            //allah
+        });
+
+        app.get('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const service = await collection.findOne(query);
+            res.send(service);
+        });
+        //
+        app.post("/product", async (req, res) => {
+            const newItem = req.body;
+            // const tokenInfo = req.headers.authorization;
+            // console.log(tokenInfo);
+            const result = await collection.insertOne(newItem);
+            res.send(result);
+        });
+
+        // 
+        // app.put('/quantity/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = req.body;
+        //     const filter = { _id: ObjectId(id) };
+        //     const option = { upsert: true };
+        //     const updateDoc = {
+        //         $set: {
+        //             quantity: query.quantity,
+        //         },
+        //     };
+        //     const result = await collection.updateOne(filter, updateDoc, option);
+        //     res.send(result);
+        // });
 
     }
 
@@ -24,6 +65,8 @@ async function run() {
     }
 }
 run().catch(console.dir);
+
+
 
 
 
