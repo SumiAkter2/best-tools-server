@@ -44,19 +44,19 @@ async function run() {
         });
 
         // 
-        // app.put('/quantity/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = req.body;
-        //     const filter = { _id: ObjectId(id) };
-        //     const option = { upsert: true };
-        //     const updateDoc = {
-        //         $set: {
-        //             quantity: query.quantity,
-        //         },
-        //     };
-        //     const result = await collection.updateOne(filter, updateDoc, option);
-        //     res.send(result);
-        // });
+        app.put('/quantity/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = req.body;
+            const filter = { _id: ObjectId(id) };
+            const option = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    quantity: query.quantity,
+                },
+            };
+            const result = await collection.updateOne(filter, updateDoc, option);
+            res.send(result);
+        });
 
     }
 
