@@ -1,5 +1,5 @@
 const express = require('express');
-
+const jwt = require('jsonwebtoken');
 const app = express();
 require('dotenv').config();
 const port = process.env.PORT || 5000;
@@ -20,21 +20,27 @@ async function run() {
         await client.connect();
         const collection = client.db("bestTools").collection("products");
         const userCollection = client.db("bestTools").collection("users");
+        const orderCollection = client.db("bestTools").collection("orders");
 
 
+        app.get('/user', async (req, res) => {
+            const users = await userCollection.find().toArray();
+            res.send(users);
+        });
 
 
-        app.put('/user', async (req, res) => {
+        app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
-            const filter = { email: email };
             const user = req.body;
+            const filter = { email: email };
             const options = { upsert: true };
             const updateDoc = {
                 $set: user,
             };
-            const result = await collection.updateOne(filter, options, updateDoc);
-            res.send(result);
-        })
+            const result = await userCollection.updateOne(filter, updateDoc, options);
+            const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+            res.send({ result, token });
+        });
 
 
         app.get('/products', async (req, res) => {
@@ -42,7 +48,7 @@ async function run() {
             const cursor = collection.find(query);
             const services = await cursor.toArray();
             res.send(services);
-            //allah
+
         });
 
         app.get('/products/:id', async (req, res) => {
@@ -72,6 +78,29 @@ async function run() {
                 },
             };
             const result = await collection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        });
+
+        app.get('/orders', async (req, res) => {
+            const orders = await orderCollection.find().toArray();
+            res.send(orders);
+        });
+        // Update quantity api
+        app.put("/orders/:id", async (req, res) => {
+            const id = req.params.id;
+            const data = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    quantity: data.avlQuantity,
+                },
+            };
+            const result = await collection.updateOne(
+                filter,
+                updateDoc,
+                options
+            );
             res.send(result);
         });
 
