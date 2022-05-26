@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const app = express();
+
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 const cors = require('cors');
@@ -142,7 +143,27 @@ async function run() {
             );
             res.send(result);
         });
+        //myitem:
+        app.get("/myItems", verifyJWT, async (req, res) => {
+            const decodedEmail = req.decoded.email;
+            const email = req.query.email;
+            if (email === decodedEmail) {
+                const query = { email };
+                const cursor = collection.find(query);
+                const myItems = await cursor.toArray();
+                res.send(myItems);
+            } else {
+                res.status(403).send({ message: "forbidden access" });
+            }
+        });
 
+        //Delete MyItem api
+        app.delete("/myItems/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await collection.deleteOne(query);
+            res.send(result);
+        });
     }
 
     finally {
