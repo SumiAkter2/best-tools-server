@@ -36,12 +36,12 @@ async function run() {
         const userCollection = client.db("bestTools").collection("users");
         const orderCollection = client.db("bestTools").collection("orders");
 
-        // app.get('/admin/:email', async (req, res) => {
-        //     const email = req.params.email;
-        //     const user = await userCollection.findOne({ email: email });
-        //     const isAdmin = user.role === 'admin';
-        //     res.send({ admin: isAdmin })
-        // })
+        app.get('/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = await userCollection.findOne({ email: email });
+            const isAdmin = user.role === 'admin';
+            res.send({ admin: isAdmin })
+        })
 
         app.put('/user/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
             const email = req.params.email;
