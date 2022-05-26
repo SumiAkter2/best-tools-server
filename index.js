@@ -46,7 +46,15 @@ async function run() {
             else {
                 res.status(403).send({ message: 'forbidden' });
             }
+
         }
+
+        app.post("/addProduct", async (req, res) => {
+            const result = await collection.insertOne(req.body);
+            res.json(result)
+        });
+
+
         app.get('/admin/:email', async (req, res) => {
             const email = req.params.email;
             const user = await userCollection.findOne({ email: email });
@@ -54,6 +62,7 @@ async function run() {
             res.send({ admin: isAdmin })
         })
         //
+
         app.put('/user/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
             const email = req.params.email;
             const filter = { email: email };
@@ -97,7 +106,7 @@ async function run() {
             const service = await collection.findOne(query);
             res.send(service);
         });
-        //
+        // //
         app.post("/products", async (req, res) => {
             const newItem = req.body;
             // const tokenInfo = req.headers.authorization;
@@ -106,7 +115,7 @@ async function run() {
             res.send(result);
         });
 
-        // 
+        // // 
         app.put('/products/:id', async (req, res) => {
             const id = req.params.id;
             const query = req.body;
@@ -125,7 +134,7 @@ async function run() {
             const orders = await orderCollection.find().toArray();
             res.send(orders);
         });
-        // Update quantity api
+        // // Update quantity api
         app.put("/orders/:id", async (req, res) => {
             const id = req.params.id;
             const data = req.body;
@@ -143,8 +152,19 @@ async function run() {
             );
             res.send(result);
         });
-        //myitem:
-        app.get("/myItems", verifyJWT, async (req, res) => {
+        app.post('/orders', async (req, res) => {
+            const orders = req.body;
+            const query = { orders: product, email, name: product.name }
+            const exists = await orderCollection.findOne(query);
+            if (exists) {
+                return res.send({ success: false, order: exists })
+            }
+            const result = await orderCollection.insertOne(orders);
+            return res.send({ success: true, result });
+        })
+
+        // myitem:
+        app.get("/orders", verifyJWT, async (req, res) => {
             const decodedEmail = req.decoded.email;
             const email = req.query.email;
             if (email === decodedEmail) {
@@ -157,8 +177,8 @@ async function run() {
             }
         });
 
-        //Delete MyItem api
-        app.delete("/myItems/:id", async (req, res) => {
+        // Delete MyItem api
+        app.delete("/orders/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await collection.deleteOne(query);
