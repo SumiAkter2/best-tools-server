@@ -15,13 +15,7 @@ app.use(cors());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ccgcw.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-const emailSenderOptions = {
-    auth: {
-        api_key: process.env.EMAIL_SENDER_KEY
-    }
-}
 
-const emailClient = nodemailer.createTransport(sgTransport(emailSenderOptions));
 
 function sendAppointmentEmail(booking) {
     const { patient, patientName, treatment, date, slot } = booking;
@@ -76,153 +70,162 @@ async function run() {
         const userCollection = client.db("bestTools").collection("users");
         const orderCollection = client.db("bestTools").collection("orders");
 
-        const verifyAdmin = async (req, res, next) => {
-            const requester = req.decoded.email;
-            const requesterAccount = await userCollection.findOne({ email: requester });
-            if (requesterAccount.role === 'admin') {
-                next();
-            }
-            else {
-                res.status(403).send({ message: 'forbidden' });
-            }
+        // const verifyAdmin = async (req, res, next) => {
+        //     const requester = req.decoded.email;
+        //     const requesterAccount = await userCollection.findOne({ email: requester });
+        //     if (requesterAccount.role === 'admin') {
+        //         next();
+        //     }
+        //     else {
+        //         res.status(403).send({ message: 'forbidden' });
+        //     }
 
-        }
-
-        app.post("/addProduct", async (req, res) => {
-            const result = await collection.insertOne(req.body);
-            res.json(result)
-        });
+        // }
 
 
-        app.get('/admin/:email', async (req, res) => {
-            const email = req.params.email;
-            const user = await userCollection.findOne({ email: email });
-            const isAdmin = user.role === 'admin';
-            res.send({ admin: isAdmin })
-        })
+
+        // app.get('/admin/:email', async (req, res) => {
+        //     const email = req.params.email;
+        //     const user = await userCollection.findOne({ email: email });
+        //     const isAdmin = user.role === 'admin';
+        //     res.send({ admin: isAdmin })
+        // })
         //
 
-        app.put('/user/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
-            const email = req.params.email;
-            const filter = { email: email };
-            const updateDoc = {
-                $set: { role: 'admin' },
-            };
-            const result = await userCollection.updateOne(filter, updateDoc);
-            res.send(result);
-        })
-        app.get('/user', async (req, res) => {
-            const users = await userCollection.find().toArray();
-            res.send(users);
-        });
+        // app.put('/user/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
+        //     const email = req.params.email;
+        //     const filter = { email: email };
+        //     const updateDoc = {
+        //         $set: { role: 'admin' },
+        //     };
+        //     const result = await userCollection.updateOne(filter, updateDoc);
+        //     res.send(result);
+        // })
+        // app.get('/user', async (req, res) => {
+        //     const users = await collection.find().toArray();
+        //     res.send(users);
+        // });
 
 
-        app.put('/user/:email', async (req, res) => {
-            const email = req.params.email;
-            const user = req.body;
-            const filter = { email: email };
-            const options = { upsert: true };
-            const updateDoc = {
-                $set: user,
-            };
-            const result = await userCollection.updateOne(filter, updateDoc, options);
-            const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
-            res.send({ result, token });
-        });
+        // app.put('/user/:email', async (req, res) => {
+        //     const email = req.params.email;
+        //     const user = req.body;
+        //     const filter = { email: email };
+        //     const options = { upsert: true };
+        //     const updateDoc = {
+        //         $set: user,
+        //     };
+        //     const result = await userCollection.updateOne(filter, updateDoc, options);
+        //     const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+        //     res.send({ result, token });
+        // });
 
 
-        app.get('/products', async (req, res) => {
-            const query = {};
-            const cursor = collection.find(query);
-            const services = await cursor.toArray();
-            res.send(services);
+        // app.get('/products', async (req, res) => {
+        //     const query = {};
+        //     const cursor = collection.find(query);
+        //     const services = await cursor.toArray();
+        //     res.send(services);
 
-        });
+        // });
 
-        app.get('/products/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            const service = await collection.findOne(query);
-            res.send(service);
-        });
-        // //
-        app.post("/products", async (req, res) => {
-            const newItem = req.body;
-            // const tokenInfo = req.headers.authorization;
-            // console.log(tokenInfo);
-            const result = await collection.insertOne(newItem);
-            res.send(result);
-        });
+        // app.get('/products/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: ObjectId(id) };
+        //     const service = await collection.findOne(query);
+        //     res.send(service);
+        // });
+        // // //
+        // app.post("/products", async (req, res) => {
+        //     const newItem = req.body;
+        //     // const tokenInfo = req.headers.authorization;
+        //     // console.log(tokenInfo);
+        //     const result = await collection.insertOne(newItem);
+        //     res.send(result);
+        // });
 
-        // // 
-        app.put('/products/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = req.body;
-            const filter = { _id: ObjectId(id) };
-            const options = { upsert: true };
-            const updateDoc = {
-                $set: {
-                    quantity: query.quantity,
-                },
-            };
-            const result = await collection.updateOne(filter, updateDoc, options);
-            res.send(result);
-        });
+        // // // 
+        // app.put('/products/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = req.body;
+        //     const filter = { _id: ObjectId(id) };
+        //     const options = { upsert: true };
+        //     const updateDoc = {
+        //         $set: {
+        //             quantity: query.quantity,
+        //         },
+        //     };
+        //     const result = await collection.updateOne(filter, updateDoc, options);
+        //     res.send(result);
+        // });
+        //orders
 
-        app.get('/orders', async (req, res) => {
-            const orders = await orderCollection.find().toArray();
-            res.send(orders);
-        });
+        // app.get('/orders', async (req, res) => {
+        //     const orders = await orderCollection.find().toArray();
+        //     res.send(orders);
+        // });
         // // Update quantity api
-        app.put("/orders/:id", async (req, res) => {
-            const id = req.params.id;
-            const data = req.body;
-            const filter = { _id: ObjectId(id) };
-            const options = { upsert: true };
-            const updateDoc = {
-                $set: {
-                    quantity: data.avlQuantity,
-                },
-            };
-            const result = await collection.updateOne(
-                filter,
-                updateDoc,
-                options
-            );
-            res.send(result);
-        });
-        app.post('/orders', async (req, res) => {
-            const orders = req.body;
-            const query = { orders: product, email, name: product.name }
-            const exists = await orderCollection.findOne(query);
-            if (exists) {
-                return res.send({ success: false, order: exists })
-            }
-            const result = await orderCollection.insertOne(orders);
-            return res.send({ success: true, result });
-        })
+        // app.put("/orders/:id", async (req, res) => {
+        //     const id = req.params.id;
+        //     const data = req.body;
+        //     const filter = { _id: ObjectId(id) };
+        //     const options = { upsert: true };
+        //     const updateDoc = {
+        //         $set: {
+        //             quantity: data.quantity,
+        //         },
+        //     };
+        //     const result = await orderCollection.updateOne(
+        //         filter,
+        //         updateDoc,
+        //         options
+        //     );
+        // res.send(result);
+        // });
+        //     app.post('/orders', async (req, res) => {
+        //         const orders = req.body;
+        //         const query = { orders: product, email: email, address: address, name: product.name }
+        //         const exists = await orderCollection.findOne(query);
+        //         if (exists) {
+        //             return res.send({ success: false, order: exists })
+        //         }
+        //         const result = await orderCollection.insertOne(orders);
+        //         return res.send({ success: true, result });
+        //     });
+        //     app.get("/orders/:email", async (req, res) => {
+        //         const user = req.params.email
+        //         const query = { email: user }
+        //         const result = await orderCollection.find(query).toArray();
+        //         res.send(result)
+        //     });
 
-        // myitem:
-        app.get("/orders", verifyJWT, async (req, res) => {
-            const decodedEmail = req.decoded.email;
-            const email = req.query.email;
-            if (email === decodedEmail) {
-                const query = { email };
-                const cursor = collection.find(query);
-                const myItems = await cursor.toArray();
-                res.send(myItems);
-            } else {
-                res.status(403).send({ message: "forbidden access" });
-            }
-        });
+        //     app.get("/orders", verifyJWT, async (req, res) => {
+        //         const decodedEmail = req.decoded.email;
+        //         const email = req.query.email;
+        //         if (email === decodedEmail) {
+        //             const query = { email: email };
+        //             const cursor = orderCollection.find(query);
+        //             const myItems = await cursor.toArray();
+        //             res.send(myItems);
+        //         } else {
+        //             res.status(403).send({ message: "forbidden access" });
+        //         }
+        //     });
 
-        // Delete MyItem api
-        app.delete("/orders/:id", async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            const result = await collection.deleteOne(query);
-            res.send(result);
-        });
+        //     // Delete MyItem api
+        //     app.delete("/orders/:id", async (req, res) => {
+        //         const id = req.params.id;
+        //         const query = { _id: ObjectId(id) };
+        //         const result = await collection.deleteOne(query);
+        //         res.send(result);
+        //     });
+        //     app.get('/', (req, res) => {
+        //         res.send('Hello Best Tools co. !')
+        //     })
+
+        //     app.listen(port, () => {
+        //         console.log(` Best Tools co. listening on port ${port}`)
+        //     })
     }
 
     finally {
@@ -236,10 +239,3 @@ run().catch(console.dir);
 
 
 
-app.get('/', (req, res) => {
-    res.send('Hello Best Tools co. !')
-})
-
-app.listen(port, () => {
-    console.log(` Best Tools co. listening on port ${port}`)
-})
