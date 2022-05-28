@@ -97,6 +97,12 @@ async function run() {
             const item = await collection.findOne(query);
             res.send(item);
         });
+        // app.delete("/delete/:id", async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: ObjectId(id) };
+        //     const result = await collection.deleteOne(query);
+        //     res.json(result);
+        // });
         //update::
         app.post("/update", async (req, res) => {
             const result = await userCollection.insertOne(req.body);
