@@ -69,7 +69,29 @@ async function run() {
         const collection = client.db("bestTools").collection("products");
         const userCollection = client.db("bestTools").collection("users");
         const reviewCollection = client.db("bestTools").collection("review")
-        // orderCollection = client.db("bestTools").collection("orders");
+        const ordersCollection = client.db("bestTools").collection("orders");
+
+        //orders:
+        app.post("/order", async (req, res) => {
+            const result = await ordersCollection.insertOne(req.body);
+            res.json(result);
+        });
+        app.get("/order/:email", async (req, res) => {
+            const user = req.params.email
+            const query = { email: user }
+            const result = await ordersCollection.find(query).toArray();
+            res.send(result)
+        });
+        app.get("/orderdetails/", async (req, res) => {
+            const result = await ordersCollection.find({}).toArray();
+            res.send(result)
+        });
+        app.delete("/order/:id", async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const result = await ordersCollection.deleteOne(query)
+            res.json(result)
+        });
 
 
         //delet:
@@ -175,8 +197,6 @@ async function run() {
 
 
 
-
-        //orders:
 
 
 
