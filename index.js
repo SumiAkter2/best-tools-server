@@ -94,14 +94,14 @@ async function run() {
         });
         ///hello ajjo
 
-        //delet:
+        //delete:
         app.delete("/deleteProducts/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await collection.deleteOne(query);
             res.json(result);
         });
-        ////reveiw:
+        ////review:
         app.post('/review', async (req, res) => {
             const result = await reviewCollection.insertOne(req.body);
             res.json(result);
@@ -193,7 +193,20 @@ async function run() {
             res.send(result);
         });
 
+        app.get('/', (req, res) => {
+            res.send('Hello Best Tools co. !')
+        })
 
+        app.listen(port, () => {
+            console.log(` Best Tools co. listening on port ${port}`)
+        })
+    }
+
+    finally {
+
+    }
+}
+run().catch(console.dir);
 
 
 
@@ -393,20 +406,7 @@ async function run() {
         //         const result = await collection.deleteOne(query);
         //         res.send(result);
         //     });
-        app.get('/', (req, res) => {
-            res.send('Hello Best Tools co. !')
-        })
-
-        app.listen(port, () => {
-            console.log(` Best Tools co. listening on port ${port}`)
-        })
-    }
-
-    finally {
-
-    }
-}
-run().catch(console.dir);
+       
 
 
 
