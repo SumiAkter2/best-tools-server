@@ -92,7 +92,7 @@ async function run() {
             const result = await ordersCollection.deleteOne(query)
             res.json(result)
         });
-
+        ///hello ajjo
 
         //delet:
         app.delete("/deleteProducts/:id", async (req, res) => {
