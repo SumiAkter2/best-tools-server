@@ -8,7 +8,7 @@ const CardProduct = ({ product }) => {
     const handleToDetail = id => {
         navigate(`products/${id}`)
     }
-    //
+    ////
     return (
         <div>
             <div className="card card-compact  bg-base-100 ">
