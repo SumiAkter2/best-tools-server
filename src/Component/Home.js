@@ -19,6 +19,7 @@ const Home = () => {
             <Products></Products>
             <GetReview></GetReview>
             <Reviews></Reviews>
+
             <Summary></Summary>
             <About></About>
             <Hotdeels></Hotdeels>

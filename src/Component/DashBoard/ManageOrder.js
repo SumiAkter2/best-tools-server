@@ -58,20 +58,29 @@ const ManageOrder = () => {
     return (
         <div >
             <h1 className='text-2xl my-12 font-bold '>Manage All Orders:</h1>
-            <div className='grid lg:grid-cols-7 gap-0  lg:h-16 mx-12 border-2 text-pink-500 font-bold text-lg'>
 
-                <p>Email:</p>
-                <p className='pl-12'>Name:</p>
-                <p>Product:</p>
-                <p> Id:</p>
-                <p className='pl-12'>Price:</p>
-                <p>Quantity:</p>
+            <div class="overflow-x-auto">
+                <table class="table w-full">
+
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Email:</th>
+                            <th>Name:</th>
+                            <th>Product:</th>
+                            <th>Price:</th>
+                            <th>Quantity:</th>
+                        </tr>
+                    </thead>
+
+                    {
+                        product.map(p => <AdminOrderDetail key={p._id}
+                            handleDelete={handleDelete}
+                            p={p}></AdminOrderDetail>)
+                    }
+
+                </table>
             </div>
-            {
-                product.map(p => <AdminOrderDetail key={p._id}
-                    handleDelete={handleDelete}
-                    p={p}></AdminOrderDetail>)
-            }
 
         </div>
     );
